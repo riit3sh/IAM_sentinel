@@ -16,8 +16,9 @@ def retrieve_node(state: GraphState):
     hybrid = HybridRetriever(qdrant_retriever=retriever)
     docs = hybrid.get_relevant_documents(query)
     
-    reranker = DocumentReranker()
-    reranked_docs = reranker.rerank(query, docs, top_k=3)
+    # Skip memory-heavy reranker for Render deployment
+    # Just take the top 3 highest scored docs from the Hybrid Retriever
+    reranked_docs = docs[:3]
     
     return {"documents": reranked_docs, "query": query, "hallucination_retries": state.get("hallucination_retries", 0)}
 
