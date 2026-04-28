@@ -41,7 +41,8 @@ def grade_docs_node(state: GraphState):
     for doc in documents:
         try:
             score = chain.invoke({"query": query, "document": doc.page_content})
-            if score.get("score") == "yes":
+            score_val = str(score.get("score", "")).strip().lower()
+            if "yes" in score_val:
                 filtered_docs.append(doc)
         except Exception as e:
             # Output parser fails generally mean local model hallucinated the json format, include conservatively
