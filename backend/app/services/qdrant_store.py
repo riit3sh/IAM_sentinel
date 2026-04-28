@@ -8,7 +8,7 @@ from app.services.embeddings import get_embeddings
 
 def get_qdrant_client():
     """Builds a raw Qdrant client."""
-    return QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
+    return QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
 def create_collection_if_not_exists(collection_name: str = "aws_iam_guide"):
     client = get_qdrant_client()

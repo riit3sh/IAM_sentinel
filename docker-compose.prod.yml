@@ -4,24 +4,25 @@ services:
   backend:
     build: 
       context: ./backend
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    # No volume mounts for /app in production so code is baked into the image
     volumes:
-      - ./backend:/app
       - ./data:/app/data
       - ./scripts:/app/scripts
     env_file:
       - .env
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    # Overriding the local dev command to remove --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
   frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile.prod
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+    # No volume mounts for /app to ensure production build is used
     env_file:
       - .env
     depends_on:

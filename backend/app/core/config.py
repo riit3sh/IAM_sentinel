@@ -5,14 +5,11 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Postgres
-    POSTGRES_USER: str = "admin"
-    POSTGRES_PASSWORD: str = "admin"
-    POSTGRES_DB: str = "iam_sentinel"
-    DATABASE_URL: str = "postgresql://admin:admin@postgres:5432/iam_sentinel"
+    DATABASE_URL: str
 
     # Qdrant
-    QDRANT_HOST: str = "qdrant"
-    QDRANT_PORT: int = 6333
+    QDRANT_URL: str
+    QDRANT_API_KEY: str
     
     # LLM
     OPENAI_API_KEY: str = ""
