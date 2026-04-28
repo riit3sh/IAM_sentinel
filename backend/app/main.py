@@ -25,3 +25,10 @@ app.include_router(chat.router, prefix=f"{settings.API_V1_STR}/chat", tags=["Cha
 @app.get("/")
 def root():
     return {"message": "Welcome to AI AWS IAM Sentinel API"}
+
+@app.get("/api/v1/trigger-index")
+def trigger_index():
+    import subprocess
+    # Run the ingestion script in the background so it doesn't time out the HTTP request
+    subprocess.Popen(["python", "scripts/index_data.py"])
+    return {"message": "Indexing triggered in background! Check Render logs for progress."}
