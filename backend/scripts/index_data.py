@@ -31,7 +31,6 @@ def build_index():
     print("\n🚀 [2/3] Building Local BM25 Sparse Index...")
     start_time = time.time()
     bm25_retriever = BM25Retriever.from_documents(documents)
-    # We retrieve 10 items for hybrid fusion limit.
     bm25_retriever.k = 10 
     
     with open(bm25_path, "wb") as f:
@@ -41,7 +40,6 @@ def build_index():
     print("\n🚀 [3/3] Uploading Vectors to Qdrant (This will take a few minutes)...")
     vector_store = get_vector_store()
     
-    # We will upload in batches to avoid RAM overflows in downloading BAAI embeds
     batch_size = 200
     for i in range(0, len(documents), batch_size):
         batch = documents[i:i+batch_size]
