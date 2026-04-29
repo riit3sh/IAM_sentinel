@@ -23,7 +23,7 @@ from app.api.endpoints import health, chat
 app.include_router(health.router, prefix=f"{settings.API_V1_STR}/health", tags=["Health"])
 app.include_router(chat.router, prefix=f"{settings.API_V1_STR}/chat", tags=["Chat Inference"])
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root():
     return {"message": "Welcome to AI AWS IAM Sentinel API"}
 

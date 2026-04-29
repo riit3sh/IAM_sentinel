@@ -1,7 +1,5 @@
 from fastapi import APIRouter
 from app.core.config import settings
-import psycopg2
-from qdrant_client import QdrantClient
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -12,24 +10,26 @@ class HealthResponse(BaseModel):
     postgres: str
     qdrant: str
 
-@router.get("/", response_model=HealthResponse)
+@router.get("", response_model=HealthResponse)
 def health_check():
     db_status = "ok"
     qdrant_status = "ok"
     
     # Check Postgres
     try:
+        import psycopg2
         conn = psycopg2.connect(settings.DATABASE_URL)
         conn.close()
     except Exception as e:
-        db_status = f"unreachable"
+        db_status = "unreachable"
 
     # Check Qdrant
     try:
-        client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
+        from qdrant_client import QdrantClient
+        client = QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
         client.get_collections()
     except Exception as e:
-        qdrant_status = f"unreachable"
+        qdrant_status = "unreachable"
 
     overall_status = "ok" if db_status == "ok" and qdrant_status == "ok" else "degraded"
 
@@ -39,3 +39,4 @@ def health_check():
         "postgres": db_status,
         "qdrant": qdrant_status
     }
+

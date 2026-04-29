@@ -20,7 +20,7 @@ class ChatResponse(BaseModel):
     citations: List[Citation]
     retries_used: int
 
-@router.post("/", response_model=ChatResponse)
+@router.post("", response_model=ChatResponse)
 def generate_chat_response(request: ChatRequest):
     try:
         initial_state = {
