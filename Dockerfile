@@ -12,8 +12,10 @@ COPY backend/requirements.txt .
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy only the backend code (PDF + scripts are fetched at runtime)
+# Copy backend code, scripts, AND data
 COPY backend/app ./app
+COPY scripts/ ./scripts/
+COPY data/ ./data/
 
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -29,24 +29,7 @@ def root():
 
 @app.get("/api/v1/trigger-index")
 def trigger_index():
-    import subprocess, os, urllib.request
-    
-    # Ensure data directory exists
-    os.makedirs("/app/data", exist_ok=True)
-    pdf_path = "/app/data/iam-ug.pdf"
-    
-    # Download PDF from GitHub if not already present
-    if not os.path.exists(pdf_path):
-        print("[Index] Downloading iam-ug.pdf from GitHub...")
-        pdf_url = "https://raw.githubusercontent.com/riit3sh/Render_IAM_sentinel/main/data/iam-ug.pdf"
-        urllib.request.urlretrieve(pdf_url, pdf_path)
-        print("[Index] Download complete.")
-    
-    # Ensure scripts directory exists and copy index script
-    os.makedirs("/app/scripts", exist_ok=True)
-    script_url = "https://raw.githubusercontent.com/riit3sh/Render_IAM_sentinel/main/scripts/index_data.py"
-    urllib.request.urlretrieve(script_url, "/app/scripts/index_data.py")
-    
-    # Run the ingestion script in the background
+    import subprocess
+    # PDF and script are baked into the Docker image
     subprocess.Popen(["python", "scripts/index_data.py"])
     return {"message": "Indexing triggered in background! Check Render logs for progress."}
