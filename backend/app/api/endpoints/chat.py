@@ -1,11 +1,17 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
-from app.services.graph.workflow import compile_workflow
 
 router = APIRouter()
-# We compile the graph once when the router starts
-workflow = compile_workflow()
+
+# Lazy-load the workflow to avoid blocking server startup
+_workflow = None
+def get_workflow():
+    global _workflow
+    if _workflow is None:
+        from app.services.graph.workflow import compile_workflow
+        _workflow = compile_workflow()
+    return _workflow
 
 class ChatRequest(BaseModel):
     message: str
@@ -31,7 +37,7 @@ def generate_chat_response(request: ChatRequest):
         }
         
         # Stream the graph execution synchronously
-        final_state = workflow.invoke(initial_state)
+        final_state = get_workflow().invoke(initial_state)
         
         # Serialize the extracted metadata into Citation objects
         citations = []

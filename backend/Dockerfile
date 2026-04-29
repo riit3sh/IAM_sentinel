@@ -12,6 +12,9 @@ COPY requirements.txt .
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Pre-download the embedding model so it loads from cache at runtime (prevents Render startup timeout)
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('BAAI/bge-small-en-v1.5')"
+
 COPY . .
 
 EXPOSE 8000
