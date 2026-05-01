@@ -2,6 +2,8 @@
 
 AI AWS IAM Sentinel is an enterprise-grade GenAI assistant designed to provide precise, context-aware answers strictly from the **AWS IAM User Guide**. It leverages a robust RAG (Retrieval-Augmented Generation) pipeline to ensure high accuracy and security-focused responses.
 
+**Live Demo:** https://ritesh-iam-sentinel.vercel.app/
+
 ---
 
 ## 🚀 Features
