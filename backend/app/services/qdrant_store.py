@@ -10,7 +10,7 @@ def get_qdrant_client():
     """Builds a raw Qdrant client."""
     return QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API_KEY)
 
-def create_collection_if_not_exists(collection_name: str = "aws_iam_guide"):
+def create_collection_if_not_exists(collection_name: str = "aws_iam_guide_v3"):
     client = get_qdrant_client()
     try:
         client.get_collection(collection_name)
@@ -22,7 +22,7 @@ def create_collection_if_not_exists(collection_name: str = "aws_iam_guide"):
             vectors_config=VectorParams(size=384, distance=Distance.COSINE)
         )
 
-def get_vector_store(collection_name: str = "aws_iam_guide"):
+def get_vector_store(collection_name: str = "aws_iam_guide_v3"):
     """
     Returns the LangChain Qdrant vector store interface.
     """

@@ -37,11 +37,35 @@ class DocumentParser:
             # Extract plain text layout block
             text = page.get_text("text").strip()
             
+            # Fallback regex check for printed page number in the top/bottom margins
+            lines = text.split("\n")
+            printed_page = None
+            
+            # Check bottom lines first
+            for line in reversed(lines[-5:]):
+                cleaned = line.strip()
+                if cleaned.isdigit() and 1 <= int(cleaned) <= 5000:
+                    printed_page = cleaned
+                    break
+            
+            # Check top lines if not found
+            if not printed_page:
+                for line in lines[:5]:
+                    cleaned = line.strip()
+                    if cleaned.isdigit() and 1 <= int(cleaned) <= 5000:
+                        printed_page = cleaned
+                        break
+                        
+            if printed_page:
+                logical_page = printed_page
+            else:
+                logical_page = str(page_num)
+            
             if text:
                 page_texts.append({
                     "text": text,
                     "metadata": {
-                        "page_number": page_num,
+                        "page_number": logical_page,
                         "section_title": current_section,
                         "source_file": self.file_path.split("/")[-1]
                     }

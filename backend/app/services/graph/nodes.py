@@ -16,9 +16,8 @@ def retrieve_node(state: GraphState):
     hybrid = HybridRetriever(qdrant_retriever=retriever)
     docs = hybrid.get_relevant_documents(query)
     
-    # Skip memory-heavy reranker for Render deployment
-    # Just take the top 3 highest scored docs from the Hybrid Retriever
-    reranked_docs = docs[:3]
+    # Increase the documents returned to top 6 to boost overall quality now that we have RAM 
+    reranked_docs = docs[:6]
     
     return {"documents": reranked_docs, "query": query, "hallucination_retries": state.get("hallucination_retries", 0)}
 
@@ -73,7 +72,8 @@ def generate_node(state: GraphState):
     prompt = ChatPromptTemplate.from_messages([
         ("system", "You are an expert AWS IAM Sentinel. "
                    "Answer the user's question using ONLY the provided retrieved context. "
-                   "Do not hallucinate external commands. Be concise. "
+                   "Do not hallucinate external commands. Provide a comprehensive, highly detailed response formatted in clean Markdown. "
+                   "Make sure to use **bold** text for important keywords, AWS services, and concepts. Use bullet points for steps.\n\n"
                    "CRITICAL REQUIREMENT: For every fact or sentence you output, you MUST append an inline citation referencing the page number, exactly formatted as [Page X, Section Y].\n\n"
                    "Context:\n{context}"),
         ("user", "Question: {query}")

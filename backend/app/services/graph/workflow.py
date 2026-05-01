@@ -13,18 +13,9 @@ def compile_workflow():
 
     # 2. Build explicit control flow
     workflow.set_entry_point("retrieve")
-    workflow.add_edge("retrieve", "grade_documents")
-    workflow.add_edge("grade_documents", "generate")
+    workflow.add_edge("retrieve", "generate")
     
-    # 3. Add Conditional Router against Hallucinations
-    workflow.add_conditional_edges(
-        "generate",
-        grade_hallucination,
-        {
-            "not supported": "generate", # Loop back to rewrite
-            "useful": END                # Ship it to user
-        }
-    )
+    workflow.add_edge("generate", END)
 
     # Compile into executable
     return workflow.compile()

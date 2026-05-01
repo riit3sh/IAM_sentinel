@@ -17,7 +17,7 @@ class ChatRequest(BaseModel):
     message: str
 
 class Citation(BaseModel):
-    page_number: int
+    page_number: str
     section_title: str
     text_preview: str
 
@@ -26,11 +26,20 @@ class ChatResponse(BaseModel):
     citations: List[Citation]
     retries_used: int
 
+_CHAT_CACHE = {}
+
 @router.post("", response_model=ChatResponse)
 def generate_chat_response(request: ChatRequest):
+    query = request.message.strip()
+    
+    # Return instantly if repeated predefined question
+    if query in _CHAT_CACHE:
+        print(f"⚡ Serving cached response for: '{query}'")
+        return _CHAT_CACHE[query]
+        
     try:
         initial_state = {
-            "query": request.message,
+            "query": query,
             "documents": [],
             "generation": "",
             "hallucination_retries": 0
@@ -43,15 +52,20 @@ def generate_chat_response(request: ChatRequest):
         citations = []
         for doc in final_state.get("documents", []):
             citations.append(Citation(
-                page_number=doc.metadata.get("page_number", 0),
+                page_number=str(doc.metadata.get("page_number", "Unknown")),
                 section_title=doc.metadata.get("section_title", "Unknown"),
                 text_preview=doc.page_content[:150]
             ))
             
-        return ChatResponse(
+        res = ChatResponse(
             response=final_state.get("generation", "Error generating response."),
             citations=citations,
             retries_used=final_state.get("hallucination_retries", 0)
         )
+        
+        # Cache answer
+        _CHAT_CACHE[query] = res
+        return res
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"LangGraph execution failed: {str(e)}")
