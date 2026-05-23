@@ -1,6 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from 'react';
 import { Send, User, Bot, Loader2, ShieldCheck, AlertCircle } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import CitationCard from './CitationCard';
 
 interface Message {
@@ -94,9 +96,18 @@ export default function ChatPanel({ onNewQuery }: { onNewQuery: (query: string) 
               {msg.role === 'assistant' ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
             </div>
             
-            <div className={`flex flex-col gap-2 max-w-[85%] ${msg.role === 'user' ? 'items-end' : ''}`}>
-              <div className={`p-4 rounded-2xl leading-relaxed text-sm shadow-sm ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'glass-panel text-gray-200 rounded-tl-none whitespace-pre-wrap'}`}>
-                {msg.content}
+            <div className={`flex flex-col gap-2 max-w-[85%] ${msg.role === 'user' ? 'items-end' : 'w-full'}`}>
+              <div className={`p-4 rounded-2xl leading-relaxed text-sm shadow-sm ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'glass-panel text-gray-200 rounded-tl-none w-full overflow-x-auto'}`}>
+                {msg.role === 'user' ? (
+                  <div className="whitespace-pre-wrap">{msg.content}</div>
+                ) : (
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm]} 
+                    className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-[#0f1115] prose-pre:border prose-pre:border-gray-700/50 prose-th:text-gray-300 prose-td:border-gray-700/50 prose-th:border-gray-700/50 prose-table:border-collapse prose-table:w-full prose-a:text-blue-400"
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                )}
               </div>
               
               {/* Hallucination Retry Warning */}
